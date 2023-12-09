@@ -1,9 +1,7 @@
 ﻿#include <clocale>
 #include <iostream>
-
 #include "menu.hpp"
 #include "menu_functions.hpp"
-
 int main() {
 	std::setlocale(LC_ALL, "");
 
@@ -22,25 +20,26 @@ int main() {
 	};
 	const int study_size = sizeof(study_children) / sizeof(study_children[0]);
 
-	ABar::MenuItem study = { "1 - Хочу учиться математике!", ABar::study };
+	ABar::MenuItem study = { "1 - Хочу учиться математике!", ABar::show_menu, study_children, study_size };
 	ABar::MenuItem exit = { "0 - Я лучше пойду полежу...", ABar::exit };
 
 	ABar::MenuItem* main_children[] = { &exit, &study };
 	const int main_size = sizeof(main_children) / sizeof(main_children[0]);
 
-	int user_input;
+	ABar::MenuItem main = { nullptr, ABar::show_menu, main_children, main_size };
+
+	study_summ.parent = &study;
+	study_substract.parent = &study;
+	study_multiply.parent = &study;
+	study_divide.parent = &study;
+	study_go_back.parent = &study;
+
+	study.parent = &main;
+	exit.parent = &main;
+
+	const ABar::MenuItem* current = &main;
 	do {
-		std::cout << "Обучайка приветствует тебя, мой юный ученик!" << std::endl;
-		for (int i = 1; i < main_size; i++) {
-			std::cout << main_children[i]->title << std::endl;
-		}
-		std::cout << main_children[0]->title << std::endl;
-		std::cout << "Обучайка > ";
-
-		std::cin >> user_input;
-		main_children[user_input]->func();
-
-		std::cout << std::endl;
+		current = current->func(current);
 	} while (true);
 	return 0;
 }
